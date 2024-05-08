@@ -1,17 +1,20 @@
 
-select*from role
+select*from role,Grade,employee
 
+-- Create Role table
 CREATE TABLE Role (
     RoleID INT PRIMARY KEY,
     RoleName VARCHAR(100) NOT NULL
 );
  
+-- Create Grade table
 CREATE TABLE Grade (
     GradeID INT PRIMARY KEY,
     GradeName VARCHAR(100) NOT NULL,
     TotalCasualLeave INT NOT NULL CHECK (TotalCasualLeave >= 0)
 );
  
+-- Create Project table
 CREATE TABLE Project (
     ProjectID INT PRIMARY KEY,
     ProjectName VARCHAR(100) NOT NULL,
@@ -21,11 +24,13 @@ CREATE TABLE Project (
     CHECK (ProjectStartDate <= ProjectEndDate)
 );
 
+-- Create Leave table
 CREATE TABLE Leave (
     LeaveID INT PRIMARY KEY,
     LeaveType VARCHAR(50) UNIQUE NOT NULL
 );
  
+-- Create Admin table
 CREATE TABLE Admin (
     AdminID INT PRIMARY KEY,
     AdminName VARCHAR(100) NOT NULL,
@@ -37,8 +42,7 @@ CREATE TABLE Admin (
     FOREIGN KEY (RoleID) REFERENCES Role(RoleID)
 );
  
-
- 
+-- Create Employee table
 CREATE TABLE Employee (
     EmployeeID INT PRIMARY KEY,
     RoleID INT NOT NULL,
@@ -49,20 +53,21 @@ CREATE TABLE Employee (
     PhoneNumber VARCHAR(20) NOT NULL,
     HireDate DATE NOT NULL,
     ManagerID INT,
-    Status varchar(2) not null,
+    Status VARCHAR(2) NOT NULL,
     Salary DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (RoleID) REFERENCES Role(RoleID),
     FOREIGN KEY (ManagerID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (GradeID) REFERENCES Grade(GradeID)
 );
  
-
- 
-
+-- Create LeaveRequest table with FromDate, ToDate, and TotalDays columns
 CREATE TABLE LeaveRequest (
     LeaveRequestID INT PRIMARY KEY,
     EmployeeID INT NOT NULL,
     LeaveID INT NOT NULL,
+    FromDate DATE NOT NULL,
+    ToDate DATE NOT NULL,
+    TotalDays INT NOT NULL, -- Total number of days for the leave request
     LeaveDate DATE NOT NULL,
     AppliedDate DATE DEFAULT GETDATE(),
     Status VARCHAR(20) DEFAULT 'Pending' NOT NULL,
@@ -72,25 +77,19 @@ CREATE TABLE LeaveRequest (
     CHECK (Status IN ('Pending', 'Approved', 'Rejected'))
 );
  
+-- Create Attendance table with IsPending column
 CREATE TABLE Attendance (
     AttendanceID INT PRIMARY KEY,
     EmployeeID INT NOT NULL,
     ProjectID INT NOT NULL,
     AttendanceDate DATE NOT NULL,
     HoursWorked DECIMAL(5, 2) NOT NULL,
+    IsPending BIT NOT NULL DEFAULT 0, -- Indicates if the attendance is pending
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
 );
  
-CREATE TABLE PendingAttendanceRequest (
-    RequestID INT PRIMARY KEY,
-    EmployeeID INT NOT NULL,
-    ProjectID INT NOT NULL,
-    RequestDate DATE DEFAULT GETDATE(),
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
-    FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
-);
- 
+-- Create LeaveBalance table
 CREATE TABLE LeaveBalance (
     LeaveBalanceID INT PRIMARY KEY,
     EmployeeID INT NOT NULL,
@@ -100,6 +99,7 @@ CREATE TABLE LeaveBalance (
     FOREIGN KEY (LeaveID) REFERENCES Leave(LeaveID)
 );
  
+-- Create LeaveHistory table
 CREATE TABLE LeaveHistory (
     LeaveHistoryID INT PRIMARY KEY,
     EmployeeID INT NOT NULL,
@@ -109,6 +109,7 @@ CREATE TABLE LeaveHistory (
     FOREIGN KEY (LeaveID) REFERENCES Leave(LeaveID)
 );
  
+-- Create LeaveInfo table
 CREATE TABLE LeaveInfo (
     LeaveInfoID INT PRIMARY KEY,
     DayOfWeek VARCHAR(20) NOT NULL,
