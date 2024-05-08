@@ -27,7 +27,7 @@ CREATE TABLE Project (
     ProjectEndDate DATE
 );
 
-CREATE TABLE Employee (
+CREATE  TABLE Employee (
     EmployeeID INT PRIMARY KEY,
     RoleID INT,
     ProjectID INT,
@@ -37,6 +37,7 @@ CREATE TABLE Employee (
     PhoneNumber VARCHAR(20),
     HireDate DATE,
     ManagerID INT,
+	EmployeeStatus VARCHAR(2) not null,
     Salary DECIMAL(10, 2),
     FOREIGN KEY (RoleID) REFERENCES Designation(DesignationID),
     FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID),
